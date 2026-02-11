@@ -110,11 +110,14 @@ class PostRepository:
                 category=category,
             )
             .returning(Post)
-            .options(joinedload(Post.author))
         )
 
         result = await self.db.execute(stmt)
-        return result.scalar_one()
+        post = result.scalar_one()
+
+        await self.db.refresh(post, attribute_names=["author"])
+
+        return post
 
     async def update_post_core(
             self,
@@ -139,12 +142,12 @@ class PostRepository:
             .where(Post.id == post_id, Post.user_id == user_id, Post.is_deleted.is_(False))
             .values(**vals)
             .returning(Post)
-            .options(joinedload(Post.author))
         )
         result = await self.db.execute(stmt)
 
         updated_post = result.scalar_one_or_none()
         if updated_post:
+            await self.db.refresh(updated_post, attribute_names=["author"])
             return RepoResult(RepoStatus.SUCCESS, updated_post)
 
         return await self._analyze_failure(post_id, user_id)
