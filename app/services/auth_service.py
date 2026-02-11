@@ -141,7 +141,7 @@ class AuthService:
                 await uow.refresh_tokens.delete_all_token_by_user(user_id=user_id)
                 raise RefreshTokenExpiredException()
 
-            user = await uow.users.get_by_id(user_id)
+            user = await uow.users.get_by_id(user_id=user_id)
             if not user:
                 raise UserNotFoundException(user_id)
 

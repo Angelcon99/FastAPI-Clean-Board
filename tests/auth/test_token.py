@@ -1,3 +1,4 @@
+import asyncio
 from sqlalchemy import select
 from httpx import AsyncClient
 from datetime import datetime, timezone
@@ -17,7 +18,10 @@ async def test_refresh(
 ):       
     refresh_token = test_user_tokens["refresh_token"]
     access_token = test_user_tokens["access_token"]
-    
+
+    # 새로운 토큰 발급 시 iat, exp 값의 차이를 두기 위해 1.1초 대기
+    await asyncio.sleep(1.1)
+
     refresh_payload = {
             "refresh_token": refresh_token
     }    
