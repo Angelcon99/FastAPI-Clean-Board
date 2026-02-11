@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.orm import selectinload
 
 from app.models.comment import Comment
 from app.repositories.result_types import RepoResult, RepoStatus
@@ -91,12 +91,12 @@ class CommentRepository:
             )
             .values(**vals)
             .returning(Comment)
-            .options(joinedload(Comment.user))
         )
         result = await self.db.execute(stmt)
         
         updated_comment = result.scalar_one_or_none()        
         if updated_comment:
+            await self.db.refresh(updated_comment, attribute_names=["user"])
             return RepoResult(RepoStatus.SUCCESS, updated_comment)
         
         stmt = (
