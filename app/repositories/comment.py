@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 
 from app.models.comment import Comment
 from app.repositories.result_types import RepoResult, RepoStatus
@@ -91,7 +91,7 @@ class CommentRepository:
             )
             .values(**vals)
             .returning(Comment)
-            .options(selectinload(Comment.user))
+            .options(joinedload(Comment.user))
         )
         result = await self.db.execute(stmt)
         
