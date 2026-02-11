@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload
 
 from app.models.bookmark import Bookmark
 from app.models.post import Post
@@ -51,7 +51,7 @@ class BookmarkRepository:
             .order_by(Bookmark.created_at.desc())
             .offset(offset)
             .limit(limit)
-            .options(selectinload(Post.author))
+            .options(joinedload(Post.author))
         )
 
         result = await self.db.scalars(stmt)

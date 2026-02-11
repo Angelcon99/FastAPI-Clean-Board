@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional
-from sqlalchemy import insert, or_, select, update
-from sqlalchemy.orm import selectinload
+from sqlalchemy import insert,  select, update
+from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.enums import PostCategory
@@ -45,7 +45,7 @@ class PostRepository:
     ) -> Post | None:
         return await self.db.scalar(
             select(Post)
-            .options(selectinload(Post.author))
+            .options(joinedload(Post.author))
             .where(Post.id == post_id, Post.is_deleted.is_(False))
         )
 
@@ -110,7 +110,7 @@ class PostRepository:
                 category=category,
             )
             .returning(Post)
-            .options(selectinload(Post.author))
+            .options(joinedload(Post.author))
         )
 
         result = await self.db.execute(stmt)
@@ -139,7 +139,7 @@ class PostRepository:
             .where(Post.id == post_id, Post.user_id == user_id, Post.is_deleted.is_(False))
             .values(**vals)
             .returning(Post)
-            .options(selectinload(Post.author))
+            .options(joinedload(Post.author))
         )
         result = await self.db.execute(stmt)
 
