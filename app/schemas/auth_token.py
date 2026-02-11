@@ -11,9 +11,9 @@ class TokenResponse(BaseModel):
     
 class TokenPayload(BaseModel):
     sub: str = Field(..., description="User ID subject")
-    role: UserRole = Field(..., description="User role (admin, user)")
     type: str = Field(..., description="Token type (access, refresh)")
     exp: datetime = Field(..., description="Expiration time (UTC)")
+    # role: UserRole = Field(..., description="User role (admin, user)")
 
 class LoginRequest(BaseModel):
     email: EmailStr = Field(..., description="User email address")
